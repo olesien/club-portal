@@ -6,6 +6,10 @@ A portal for clubs to use
 
 `Make .env file and add SendGrid secret`
 
+# Add certts
+
+Go to /nginx/certs and add selfsigned certs (.crt & .key)
+
 ## Dev (with vite hot reload)
 
 `docker-compose -f docker-compose.dev.yaml up --build`
