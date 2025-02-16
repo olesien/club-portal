@@ -6,7 +6,7 @@ A portal for clubs to use
 
 `Make .env file and add SendGrid secret`
 
-# Add certts
+# Add certs
 
 Go to /nginx/certs and add selfsigned certs (.crt & .key)
 
