@@ -14,7 +14,7 @@ import Button from "@mui/material/Button";
 import { toast } from "react-toastify";
 import { LinearProgressWithLabel } from "./LinearProgressWithLabel";
 import Box from "@mui/material/Box";
-import FailedFind from "./FailedFind";
+// import FailedFind from "./FailedFind";
 
 const STATIC_KEYS = ["csv_import_date", "csv_import_transaction_type", "csv_import_price", "csv_import_quantity", "csv_import_ISIN", "csv_import_diff", "csv_import_name"]
 type Action = {
@@ -110,15 +110,12 @@ export default function ImportModal({ handleClose, refetch }: { handleClose: () 
     const [scanning, setScanning] = useState(false);
     const [page, setPage] = useState(1);
     const [progressBar, setProgressbar] = useState([0, 0]);
-    const [failedFinds, setFailedFinds] = useState<{ id: string; name: string }[]>([]);
+    // const [failedFinds, setFailedFinds] = useState<{ id: string; name: string }[]>([]);
     const [ISIN_Relations, set_ISIN_Relations] = useState(new Map<string, { shortname: string, symbol: string, stockName?: string; overridePrice?: number; }>());
     // const [aggregatedData, setAggregatedData] = useState<AggregatedData[]>([]);
     const [table, setTable] = useState<{ keys: string[], values: string[], connections: Connection[], data: CSVRow[] }>({ keys: STATIC_KEYS, values: [], connections: [], data: [] })
     const { keys, values, connections } = table;
-    console.log(connections);
     const parseData = (data: CSVRow[]) => {
-        console.log(data);
-        console.log(Object.keys(data[0]));
         const columns = Object.keys(data[0]);
         const connections = bindDefaultConnections(columns);
         setTable({ keys, values: columns, data: data, connections })
@@ -191,7 +188,11 @@ export default function ImportModal({ handleClose, refetch }: { handleClose: () 
                 }
                 return prev;
             }, { date: new Date(), price: 0, amount: 0, count: 0 })
-            return { date, price: price / count, amount: amount / count }
+            return {
+                date,
+                price: count === 0 ? 0 : price / count,
+                amount: count === 0 ? 0 : amount / count
+            }
         }
         for (const data of aggregated) {
             //buy: 10 amount
@@ -199,9 +200,9 @@ export default function ImportModal({ handleClose, refetch }: { handleClose: () 
             //sell: 3 amount
             const sells = sumBy(data.actions, "Sälj");
 
-            const effectiveBuysAmount = buys.amount - sells.amount; //10-3 = 7 still remaining in bought cat
+            const effectiveBuysAmount = (buys?.amount ?? 0) - (sells?.amount ?? 0); //10-3 = 7 still remaining in bought cat
 
-            const effectiveSellsAmount = sells.amount;
+            const effectiveSellsAmount = (sells?.amount ?? 0);
 
             if (effectiveBuysAmount > 0) {
                 stocks.push({
@@ -376,7 +377,7 @@ export default function ImportModal({ handleClose, refetch }: { handleClose: () 
                 {page === 3 && <div>
                     <Box sx={{ display: "flex", justifyContent: "center" }}>{ISIN_Relations.size != totalISIN && <Button onClick={() => scan()} disabled={scanning}>{scanning ? `${translate["scanning"]}... ${ISIN_Relations.size} / ${totalISIN}` : translate["convert_ISIN"]}</Button>}
                     </Box>
-                    {failedFinds.length > 0 && <FailedFind item={failedFinds[0]} updateStock={(v) => console.log(v)} />}
+                    {/* {failedFinds.length > 0 && <FailedFind item={failedFinds[0]} updateStock={(v) => console.log(v)} />} */}
                     <StockPreview data={stocks} />
                 </div>}
 
